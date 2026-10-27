@@ -119,13 +119,20 @@ class DailyTrackingScreen extends ConsumerWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                isOver ? 'Allowance Exceeded' : 'Remaining Allowance',
-                                style: const TextStyle(color: Colors.white70, fontSize: 13),
+                              Expanded(
+                                child: Text(
+                                  isOver ? 'Allowance Exceeded' : 'Remaining Allowance',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(color: Colors.white70, fontSize: 13),
+                                ),
                               ),
+                              const SizedBox(width: 8),
                               StatusBadge(
                                 label: isOver ? 'Overspent' : 'Within Budget',
-                                color: isOver ? Colors.white : AppColors.success,
+                                color: isOver ? Colors.white.withAlpha(45) : AppColors.success,
+                                textColor: Colors.white,
+                                icon: isOver ? Icons.warning_rounded : Icons.check_circle_rounded,
                                 isFilled: true,
                               ),
                             ],
@@ -220,7 +227,7 @@ class DailyTrackingScreen extends ConsumerWidget {
                         ),
                         IconButton(
                           icon: const Icon(Icons.add_circle, color: AppColors.primary),
-                          onPressed: () => AddExpenseScreen.show(context),
+                          onPressed: () => AddExpenseScreen.show(context, initialDate: selectedDate),
                         ),
                       ],
                     ),
@@ -232,7 +239,7 @@ class DailyTrackingScreen extends ConsumerWidget {
                         title: 'No expenses on this date',
                         description: 'You haven\'t logged any spending for ${DateFormatter.formatDate(selectedDate)}.',
                         buttonText: 'Add Expense',
-                        onButtonPressed: () => AddExpenseScreen.show(context),
+                        onButtonPressed: () => AddExpenseScreen.show(context, initialDate: selectedDate),
                       )
                     else
                       SpendWiseCard(

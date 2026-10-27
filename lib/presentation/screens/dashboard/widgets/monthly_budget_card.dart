@@ -28,29 +28,36 @@ class MonthlyBudgetCard extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withAlpha(25),
-                      borderRadius: BorderRadius.circular(10),
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(7),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withAlpha(25),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(
+                        Icons.pie_chart_outline_rounded,
+                        color: AppColors.primary,
+                        size: 16,
+                      ),
                     ),
-                    child: const Icon(
-                      Icons.pie_chart_outline_rounded,
-                      color: AppColors.primary,
-                      size: 18,
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Monthly Budget',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    'Monthly Budget Overview',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              const SizedBox(width: 6),
               InkWell(
                 borderRadius: BorderRadius.circular(8),
                 onTap: () => EditBudgetDialog.show(context),
@@ -162,10 +169,12 @@ class MonthlyBudgetCard extends ConsumerWidget {
                 ),
               ),
               if (isOverspent)
-                StatusBadge(
-                  label: 'Overspent: ${CurrencyFormatter.formatMinor(calc.overspentAmountMinor, symbol: currencySymbol)}',
-                  color: AppColors.danger,
-                  icon: Icons.error_outline,
+                Flexible(
+                  child: StatusBadge(
+                    label: 'Over: ${CurrencyFormatter.formatMinor(calc.overspentAmountMinor, symbol: currencySymbol)}',
+                    color: AppColors.danger,
+                    icon: Icons.error_outline,
+                  ),
                 )
               else
                 Text(

@@ -27,16 +27,36 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: ActionChip(
-              avatar: const Icon(Icons.calendar_month, size: 16),
-              label: Text(
-                _isMonthly
-                    ? DateFormatter.formatShortMonthYear(DateTime(monthYear.year, monthYear.month, 1))
-                    : '${monthYear.year}',
-                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+            padding: const EdgeInsets.only(right: 12),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => _pickDate(context),
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.calendar_month, size: 14),
+                      const SizedBox(width: 6),
+                      Text(
+                        _isMonthly
+                            ? DateFormatter.formatShortMonthYear(DateTime(monthYear.year, monthYear.month, 1))
+                            : '${monthYear.year}',
+                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              onPressed: () => _pickDate(context),
             ),
           ),
         ],
@@ -46,21 +66,25 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
           // Segmented selector: Monthly vs Yearly
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: SegmentedButton<bool>(
-              segments: const [
-                ButtonSegment<bool>(
-                  value: true,
-                  label: Text('Monthly Report'),
-                  icon: Icon(Icons.calendar_view_month, size: 16),
-                ),
-                ButtonSegment<bool>(
-                  value: false,
-                  label: Text('Yearly Report'),
-                  icon: Icon(Icons.calendar_today, size: 16),
-                ),
-              ],
-              selected: {_isMonthly},
-              onSelectionChanged: (set) => setState(() => _isMonthly = set.first),
+            child: SizedBox(
+              width: double.infinity,
+              child: SegmentedButton<bool>(
+                showSelectedIcon: false,
+                segments: const [
+                  ButtonSegment<bool>(
+                    value: true,
+                    label: Text('Monthly Report', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                    icon: Icon(Icons.calendar_view_month, size: 16),
+                  ),
+                  ButtonSegment<bool>(
+                    value: false,
+                    label: Text('Yearly Report', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                    icon: Icon(Icons.calendar_today, size: 16),
+                  ),
+                ],
+                selected: {_isMonthly},
+                onSelectionChanged: (set) => setState(() => _isMonthly = set.first),
+              ),
             ),
           ),
 

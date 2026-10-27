@@ -41,16 +41,28 @@ class _ExportDataDialogState extends ConsumerState<ExportDataDialog> {
             children: [
               const Text('Export Format:', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
               const SizedBox(height: 8),
-              SegmentedButton<String>(
-                segments: const [
-                  ButtonSegment(value: 'csv', label: Text('CSV Spreadsheet')),
-                  ButtonSegment(value: 'summary', label: Text('Summary Report')),
-                ],
-                selected: {_exportFormat},
-                onSelectionChanged: (set) => setState(() {
-                  _exportFormat = set.first;
-                  _generatedOutput = null;
-                }),
+              SizedBox(
+                width: double.infinity,
+                child: SegmentedButton<String>(
+                  showSelectedIcon: false,
+                  segments: const [
+                    ButtonSegment(
+                      value: 'csv',
+                      icon: Icon(Icons.table_chart_outlined, size: 16),
+                      label: Text('CSV File', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                    ),
+                    ButtonSegment(
+                      value: 'summary',
+                      icon: Icon(Icons.description_outlined, size: 16),
+                      label: Text('Summary', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                    ),
+                  ],
+                  selected: {_exportFormat},
+                  onSelectionChanged: (set) => setState(() {
+                    _exportFormat = set.first;
+                    _generatedOutput = null;
+                  }),
+                ),
               ),
               const SizedBox(height: 16),
               const Text('Select Date Range:', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),

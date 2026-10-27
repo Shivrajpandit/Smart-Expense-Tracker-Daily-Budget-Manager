@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class StatusBadge extends StatelessWidget {
   final String label;
   final Color color;
+  final Color? textColor;
   final IconData? icon;
   final bool isFilled;
 
@@ -10,12 +11,14 @@ class StatusBadge extends StatelessWidget {
     super.key,
     required this.label,
     required this.color,
+    this.textColor,
     this.icon,
     this.isFilled = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final effectiveTextColor = textColor ?? (isFilled ? Colors.white : color);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
@@ -30,16 +33,20 @@ class StatusBadge extends StatelessWidget {
             Icon(
               icon,
               size: 13,
-              color: isFilled ? Colors.white : color,
+              color: effectiveTextColor,
             ),
             const SizedBox(width: 4),
           ],
-          Text(
-            label,
-            style: TextStyle(
-              color: isFilled ? Colors.white : color,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: effectiveTextColor,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],

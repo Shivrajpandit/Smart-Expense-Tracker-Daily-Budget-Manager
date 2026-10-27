@@ -23,37 +23,39 @@ class DashboardScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(7),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: AppColors.primaryGradient,
                 ),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(10),
               ),
               child: const Icon(
                 Icons.account_balance_wallet,
                 color: Colors.white,
-                size: 20,
+                size: 18,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 const Text(
                   'SpendWise',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    letterSpacing: -0.5,
+                    letterSpacing: -0.4,
                   ),
                 ),
                 Text(
                   'Daily Budget Manager',
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 10,
                     color: theme.textTheme.bodyMedium?.color,
                     fontWeight: FontWeight.w500,
                   ),
@@ -63,16 +65,35 @@ class DashboardScreen extends ConsumerWidget {
           ],
         ),
         actions: [
-          // Month/Year picker chip
           Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: ActionChip(
-              avatar: const Icon(Icons.calendar_month, size: 16),
-              label: Text(
-                DateFormatter.formatMonthYear(DateTime(monthYear.year, monthYear.month, 1)),
-                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+            padding: const EdgeInsets.only(right: 12),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => _selectMonthYear(context, ref),
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: theme.dividerColor.withValues(alpha: 0.5),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.calendar_month, size: 14, color: AppColors.primary),
+                      const SizedBox(width: 6),
+                      Text(
+                        DateFormatter.formatShortMonthYear(DateTime(monthYear.year, monthYear.month, 1)),
+                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              onPressed: () => _selectMonthYear(context, ref),
             ),
           ),
         ],

@@ -9,22 +9,28 @@ import '../../../core/utils/date_formatter.dart';
 import '../../../domain/models/category_model.dart';
 import '../../../domain/models/expense_model.dart';
 import '../../../domain/models/income_model.dart';
+import '../../providers/budget_provider.dart';
 import '../../providers/category_provider.dart';
 import '../../providers/database_provider.dart';
+import '../../providers/expense_provider.dart';
 import '../../providers/settings_provider.dart';
 
 class AddExpenseScreen extends ConsumerStatefulWidget {
   final ExpenseModel? expenseToEdit;
+  final DateTime? initialDate;
 
-  const AddExpenseScreen({super.key, this.expenseToEdit});
+  const AddExpenseScreen({super.key, this.expenseToEdit, this.initialDate});
 
-  static Future<void> show(BuildContext context, {ExpenseModel? expenseToEdit}) {
+  static Future<void> show(BuildContext context, {ExpenseModel? expenseToEdit, DateTime? initialDate}) {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
       backgroundColor: Colors.transparent,
-      builder: (ctx) => AddExpenseScreen(expenseToEdit: expenseToEdit),
+      builder: (ctx) => AddExpenseScreen(
+        expenseToEdit: expenseToEdit,
+        initialDate: initialDate,
+      ),
     );
   }
 
@@ -57,6 +63,8 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       _selectedCategoryId = e.categoryId;
       _selectedPaymentMethod = e.paymentMethod;
       _selectedDate = e.date;
+    } else if (widget.initialDate != null) {
+      _selectedDate = widget.initialDate!;
     }
   }
 
@@ -563,6 +571,14 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     final now = DateTime.now();
     final timeStr = DateFormatter.formatTimeOfDay(_selectedTime);
 
+    final recordDate = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      _selectedTime.hour,
+      _selectedTime.minute,
+    );
+
     if (_isExpense) {
       final expenseRepo = ref.read(expenseRepositoryProvider);
       if (widget.expenseToEdit != null) {
@@ -571,7 +587,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
           categoryId: _selectedCategoryId!,
           description: _descController.text.trim(),
           merchant: _merchantController.text.trim(),
-          date: _selectedDate,
+          date: recordDate,
           timeString: timeStr,
           paymentMethod: _selectedPaymentMethod,
           notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
@@ -585,7 +601,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
           categoryId: _selectedCategoryId!,
           description: _descController.text.trim(),
           merchant: _merchantController.text.trim(),
-          date: _selectedDate,
+          date: recordDate,
           timeString: timeStr,
           paymentMethod: _selectedPaymentMethod,
           notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
@@ -601,13 +617,19 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
         amountMinor: amountMinor,
         source: _descController.text.trim(),
         categoryId: _selectedCategoryId!,
-        date: _selectedDate,
+        date: recordDate,
         paymentMethod: _selectedPaymentMethod,
         notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
         createdAt: now,
       );
       await incomeRepo.insertIncome(income);
     }
+
+    // Invalidate state so any UI consumers update immediately
+    ref.invalidate(selectedDateExpensesProvider);
+    ref.invalidate(currentMonthExpensesProvider);
+    ref.invalidate(allExpensesStreamProvider);
+    ref.invalidate(recentExpensesStreamProvider);
 
     if (mounted) {
       Navigator.of(context).pop();

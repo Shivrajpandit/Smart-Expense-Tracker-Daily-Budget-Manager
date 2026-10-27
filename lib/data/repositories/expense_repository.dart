@@ -16,20 +16,20 @@ class ExpenseRepository {
 
   Stream<List<ExpenseModel>> watchExpensesForDate(DateTime date) {
     final start = DateTime(date.year, date.month, date.day);
-    final end = DateTime(date.year, date.month, date.day, 23, 59, 59, 999);
+    final nextDay = DateTime(date.year, date.month, date.day + 1);
 
     final query = _db.select(_db.expensesTable)
-      ..where((tbl) => tbl.date.isBiggerOrEqualValue(start) & tbl.date.isSmallerOrEqualValue(end))
+      ..where((tbl) => tbl.date.isBiggerOrEqualValue(start) & tbl.date.isSmallerThanValue(nextDay))
       ..orderBy([(tbl) => OrderingTerm.desc(tbl.createdAt)]);
     return query.watch().map((entities) => entities.map(_mapEntityToModel).toList());
   }
 
   Stream<List<ExpenseModel>> watchExpensesForMonth(int year, int month) {
     final start = DateTime(year, month, 1);
-    final end = DateTime(year, month + 1, 0, 23, 59, 59, 999);
+    final nextMonth = DateTime(year, month + 1, 1);
 
     final query = _db.select(_db.expensesTable)
-      ..where((tbl) => tbl.date.isBiggerOrEqualValue(start) & tbl.date.isSmallerOrEqualValue(end))
+      ..where((tbl) => tbl.date.isBiggerOrEqualValue(start) & tbl.date.isSmallerThanValue(nextMonth))
       ..orderBy([(tbl) => OrderingTerm.desc(tbl.date)]);
     return query.watch().map((entities) => entities.map(_mapEntityToModel).toList());
   }
@@ -43,10 +43,10 @@ class ExpenseRepository {
 
   Future<List<ExpenseModel>> getExpensesForDate(DateTime date) async {
     final start = DateTime(date.year, date.month, date.day);
-    final end = DateTime(date.year, date.month, date.day, 23, 59, 59, 999);
+    final nextDay = DateTime(date.year, date.month, date.day + 1);
 
     final query = _db.select(_db.expensesTable)
-      ..where((tbl) => tbl.date.isBiggerOrEqualValue(start) & tbl.date.isSmallerOrEqualValue(end))
+      ..where((tbl) => tbl.date.isBiggerOrEqualValue(start) & tbl.date.isSmallerThanValue(nextDay))
       ..orderBy([(tbl) => OrderingTerm.desc(tbl.createdAt)]);
     final entities = await query.get();
     return entities.map(_mapEntityToModel).toList();
@@ -54,21 +54,31 @@ class ExpenseRepository {
 
   Future<List<ExpenseModel>> getExpensesForMonth(int year, int month) async {
     final start = DateTime(year, month, 1);
-    final end = DateTime(year, month + 1, 0, 23, 59, 59, 999);
+    final nextMonth = DateTime(year, month + 1, 1);
 
     final query = _db.select(_db.expensesTable)
-      ..where((tbl) => tbl.date.isBiggerOrEqualValue(start) & tbl.date.isSmallerOrEqualValue(end))
+      ..where((tbl) => tbl.date.isBiggerOrEqualValue(start) & tbl.date.isSmallerThanValue(nextMonth))
       ..orderBy([(tbl) => OrderingTerm.asc(tbl.date)]);
     final entities = await query.get();
     return entities.map(_mapEntityToModel).toList();
   }
 
-  Future<List<ExpenseModel>> getExpensesForYear(int year) async {
+  Stream<List<ExpenseModel>> watchExpensesForYear(int year) {
     final start = DateTime(year, 1, 1);
-    final end = DateTime(year, 12, 31, 23, 59, 59, 999);
+    final nextYear = DateTime(year + 1, 1, 1);
 
     final query = _db.select(_db.expensesTable)
-      ..where((tbl) => tbl.date.isBiggerOrEqualValue(start) & tbl.date.isSmallerOrEqualValue(end))
+      ..where((tbl) => tbl.date.isBiggerOrEqualValue(start) & tbl.date.isSmallerThanValue(nextYear))
+      ..orderBy([(tbl) => OrderingTerm.asc(tbl.date)]);
+    return query.watch().map((entities) => entities.map(_mapEntityToModel).toList());
+  }
+
+  Future<List<ExpenseModel>> getExpensesForYear(int year) async {
+    final start = DateTime(year, 1, 1);
+    final nextYear = DateTime(year + 1, 1, 1);
+
+    final query = _db.select(_db.expensesTable)
+      ..where((tbl) => tbl.date.isBiggerOrEqualValue(start) & tbl.date.isSmallerThanValue(nextYear))
       ..orderBy([(tbl) => OrderingTerm.asc(tbl.date)]);
     final entities = await query.get();
     return entities.map(_mapEntityToModel).toList();
